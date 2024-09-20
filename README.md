@@ -1,12 +1,10 @@
 # SurvRNC: Learning Ordered Representations for Survival Prediction using Rank-N-Contrast
 
 <div align="center">
-    <figure>
-        <img src="./docs/SurvRNC.png" alt="Image" width="50%" height="50%">
-        <figcaption>
-            Overview of the proposed SurvRNC loss function for learning ordinal representations. In a randomly weighted sampled batch of M patients, the loss function ranks them with respect to their time-to-event differences with the anchor. Contrasting the anchor patient with a positive pair patient enforces the similarity in the embedding space to be higher than the negative pair(s) of patients with a larger time-to-event difference than the positive pair. The uncertain patient pair(s), whose real-time difference with the anchor patient is unknown, are given less weight. (a) shows an example of an uncensored anchor and positive-pair patient. (b) shows an example of a censored anchor with an uncensored, positive pair. (c) provides all different combinations that can occur between a batch of patients.
-        </figcaption>
-    </figure>
+    <img src="./docs/SurvRNC.png" alt="SurvRNC Overview" width="50%" height="50%">
+    <p>
+        <em>Overview of the proposed SurvRNC loss function for learning ordinal representations. In a randomly weighted sampled batch of M patients, the loss function ranks them with respect to their time-to-event differences with the anchor. Contrasting the anchor patient with a positive pair patient enforces the similarity in the embedding space to be higher than the negative pair(s) of patients with a larger time-to-event difference than the positive pair. The uncertain patient pair(s), whose real-time difference with the anchor patient is unknown, are given less weight. (a) shows an example of an uncensored anchor and positive-pair patient. (b) shows an example of a censored anchor with an uncensored, positive pair. (c) provides all different combinations that can occur between a batch of patients.</em>
+    </p>
 </div>
 
 > [**SurvRNC: Learning Ordered Representations for Survival Prediction using Rank-N-Contrast**](https://arxiv.org/pdf/2403.10603) <br>
