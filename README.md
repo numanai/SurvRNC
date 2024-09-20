@@ -8,7 +8,7 @@
 </div>
 
 > [**SurvRNC: Learning Ordered Representations for Survival Prediction using Rank-N-Contrast**](https://arxiv.org/pdf/2403.10603) <br>
-> [Numan Saeed](https://numanai.github.io/)* , [Muhammad Ridzuan](https://mfarnas.github.io/ridzuan-healthcare-ai/)* , Fadillah Adamsyah Maani, Hussain Alasmawi, Karthik Nandakumar, Mohammad Yaqub
+> [Numan Saeed](https://numanai.github.io/)* , [Muhammad Ridzuan](https://mfarnas.github.io/ridzuan-healthcare-ai/)* , [Fadillah Adamsyah Maani](https://adamsyah.netlify.app/), Hussain Alasmawi, Karthik Nandakumar, Mohammad Yaqub
 
 \* Equally contributing first authors
 
