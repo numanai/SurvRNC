@@ -1,0 +1,41 @@
+# configs/train.yaml
+
+# Inherit from default.yaml
+seed: 1406
+epochs: 10
+batch_size: 32
+lr: 0.01
+weight_decay: 0.0001
+num_workers: 4
+validation_epoch: 1
+
+loss_rnc: 0.5
+temperature: 2
+loss_rnc_type: "ProgRnCLoss"
+
+optimizer: "AdamW"
+scheduler_name: "StepLR"
+scheduler_step_size: 50
+scheduler_gamma: 0.1
+
+wandb: true
+wandb_api_key: "52d438bccc7b581b2549ed00bf5e58768c76eca3"
+wandb_project: "SurvRNC"
+run_name: "Training_Run"
+
+model_name: "deepmtlr"
+activation: "ReLU"
+n_depth: 1
+dense_factor: 3
+dropout_rate: 0.3
+k1: 7
+k2: 5
+label_num_duration: 20
+layer1_size: 16
+layer2_size: 32
+
+
+data_name: "metabric"
+data_path: "/home/numansaeed/Projects/CoRePro/SurvRNC/data"
+fold: 4
+data_split: [0.8, 0.2, 0.0]

@@ -1,0 +1,13 @@
+# configs/preprocess.yaml
+
+# Inherit from default.yaml
+data_path: "/home/numansaeed/Projects/CoRePro/SurvRNC/data/raw"
+space_x: 2
+space_y: 2
+space_z: 2
+a_min: -250
+a_max: 250
+b_min: 0
+b_max: 1
+seed: 1234
+save_dir: "/home/numansaeed/Projects/CoRePro/SurvRNC/data/processed/ctpt"

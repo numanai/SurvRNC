@@ -1,0 +1,45 @@
+# configs/default.yaml
+
+# Data Parameters
+data_path: "/home/numansaeed/Projects/CoRePro/HECKTOR/1_1_1_s176v2"
+space_x: 2
+space_y: 2
+space_z: 2
+a_min: -250
+a_max: 250
+b_min: 0
+b_max: 1
+seed: 1234
+save_dir: "/home/numansaeed/Projects/CoRePro/HECKTOR/1_1_1_s176v2/ctpt"
+
+# Training Parameters
+epochs: 50
+batch_size: 32
+lr: 0.01
+weight_decay: 1e-4
+num_workers: 4
+validation_epoch: 1
+
+# Loss Parameters
+loss_rnc: 0.5
+temperature: 2
+loss_rnc_type: "ProgRnCLoss"
+
+# Optimizer & Scheduler
+optimizer: "AdamW"
+scheduler_name: "StepLR"
+scheduler_step_size: 50
+scheduler_gamma: 0.1
+
+# WandB Parameters
+wandb: true
+run_name: "Default_Run"
+
+# Model Parameters
+model_name: "deepmtlr"
+n_depth: 3
+dense_factor: 3
+dropout_rate: 0.5
+k1: 5
+k2: 5
+label_num_duration: 20
