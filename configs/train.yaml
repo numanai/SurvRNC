@@ -19,7 +19,7 @@ scheduler_step_size: 50
 scheduler_gamma: 0.1
 
 wandb: true
-wandb_api_key: "52d438bccc7b581b2549ed00bf5e58768c76eca3"
+wandb_api_key: "put_your_api_key"
 wandb_project: "SurvRNC"
 run_name: "Training_Run"
 
