@@ -35,9 +35,10 @@ from monai.transforms import (
 
 from net import Deep_CNN
 from hecktor_dataset import HecktorDataset, HecktorTestDataset, HecktorDataset2Images
+from typing import Tuple, Dict, Any, Union, List
 
 
-def normalize(data, mean=None, std=None, skip_cols=[]):
+def normalize(data: pd.DataFrame, mean: pd.Series = None, std: pd.Series = None, skip_cols: List[str] = []) -> Tuple[pd.DataFrame, pd.Series, pd.Series]:
     """Normalizes the columns of Pandas DataFrame to zero mean and unit
     standard deviation."""
     if mean is None:
@@ -50,7 +51,7 @@ def normalize(data, mean=None, std=None, skip_cols=[]):
     return (data - mean) / std, mean, std
 
 
-def reset_parameters(model):
+def reset_parameters(model: nn.Module) -> nn.Module:
     """Resets the parameters of a PyTorch module and its children."""
     for m in model.modules():
         try:
@@ -59,11 +60,11 @@ def reset_parameters(model):
             continue
     return model
 
-def float_list(value):
+def float_list(value: str) -> List[float]:
     return [float(item) for item in value.split(',')]
 
 
-def preprocess_data(args):
+def preprocess_data(args: Dict[str, Any]) -> Union[Dict[str, Any], None]:
     ## dataset name
     data_name = args["data_name"].lower()
     
@@ -470,7 +471,7 @@ def preprocess_data(args):
     elif data_name == 'None':
         data = None
         
-def define_model_and_loss(args):
+def define_model_and_loss(args: Dict[str, Any]) -> Tuple[nn.Module, nn.Module]:
     model_name = args['model_name'].lower()
     
     if model_name == 'mtlr':
@@ -505,7 +506,7 @@ def define_model_and_loss(args):
     return model, loss
 
 class Model(nn.Module):
-    def __init__(self, args):
+    def __init__(self, args: Dict[str, Any]):
         super().__init__()
  
         self.duration_index = args['lbl_cuts']
@@ -527,32 +528,32 @@ class Model(nn.Module):
             torch.nn.Linear(args['layer2_size'], args['label_num_duration'])
         )
     
-    def forward_enc(self, x):
+    def forward_enc(self, x: torch.Tensor) -> torch.Tensor:
         return self.encoder(x)  
     
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
         x_emb = self.encoder(x)
         out = self.final_layer(x_emb)
 
         return x_emb, out
     
-    def predict_surv(self, input,  numpy=None):
+    def predict_surv(self, input: torch.Tensor, numpy: bool = None) -> torch.Tensor:
         pmf = self.predict_pmf(input, False)
         surv = 1 - pmf.cumsum(1)
         return tt.utils.array_or_tensor(surv, numpy, input)
 
-    def predict_pmf(self, input, batch_size=8224, numpy=None, eval_=True, to_cpu=False, num_workers=0):
+    def predict_pmf(self, input: torch.Tensor, batch_size: int = 8224, numpy: bool = None, eval_: bool = True, to_cpu: bool = False, num_workers: int = 0) -> torch.Tensor:
         # preds = self.predict(input, batch_size, False, eval_, False, to_cpu, num_workers)
         preds = torch.from_numpy(input)
         preds = utils.cumsum_reverse(preds, dim=1)
         pmf = utils.pad_col(preds).softmax(1)[:, :-1]
         return tt.utils.array_or_tensor(pmf, numpy, input)
 
-    def predict_surv_df(self, input):
+    def predict_surv_df(self, input: torch.Tensor) -> pd.DataFrame:
         surv = self.predict_surv(input, True)
         return pd.DataFrame(surv.transpose(), self.duration_index)
     
-    def interpolate(self, sub=10, scheme='const_pdf', duration_index=None):
+    def interpolate(self, sub: int = 10, scheme: str = 'const_pdf', duration_index: np.ndarray = None) -> InterpolatePMF:
         """Use interpolation for predictions.
         There are only one scheme:
             `const_pdf` and `lin_surv` which assumes pice-wise constant pmf in each interval (linear survival).
@@ -576,11 +577,11 @@ class Model(nn.Module):
 import matplotlib.pyplot as plt
 from umap import UMAP
 class HelperUMAP:
-    def __init__(self, X, **kwargs):
+    def __init__(self, X: np.ndarray, **kwargs: Any):
         self.umap_obj = UMAP(**kwargs)
         self.embs = self.umap_obj.fit_transform(X)
     
-    def __call__(self, labels):
+    def __call__(self, labels: np.ndarray) -> plt.Figure:
         
         fig = plt.figure()
         ax = fig.add_subplot()
@@ -597,20 +598,20 @@ class AverageMeter(object):
     def __init__(self):
         self.reset()
     
-    def reset(self):
+    def reset(self) -> None:
         self.val = 0
         self.avg = 0
         self.sum = 0
         self.count = 0
     
-    def update(self, val, n=1):
+    def update(self, val: float, n: int = 1) -> None:
         self.val = val
         self.sum += val * n
         self.count += n
         self.avg = self.sum / self.count
 
 
-def compute_metric_at_times(metric, time_true, prob_pred, event_observed, score_times):
+def compute_metric_at_times(metric: Any, time_true: np.ndarray, prob_pred: np.ndarray, event_observed: np.ndarray, score_times: np.ndarray) -> List[float]:
     """Helper function to evaluate a metric at given timepoints."""
     scores = []
     for time, pred in zip(score_times, prob_pred.T):
@@ -621,7 +622,7 @@ def compute_metric_at_times(metric, time_true, prob_pred, event_observed, score_
     return scores
 
 
-def brier_score_at_times(time_true, prob_pred, event_observed, score_times):
+def brier_score_at_times(time_true: np.ndarray, prob_pred: np.ndarray, event_observed: np.ndarray, score_times: np.ndarray) -> List[float]:
     scores = compute_metric_at_times(brier_score_loss, 
                                      time_true,
                                      prob_pred,
@@ -630,7 +631,7 @@ def brier_score_at_times(time_true, prob_pred, event_observed, score_times):
     return scores
 
 
-def roc_auc_at_times(time_true, prob_pred, event_observed, score_times):
+def roc_auc_at_times(time_true: np.ndarray, prob_pred: np.ndarray, event_observed: np.ndarray, score_times: np.ndarray) -> List[float]:
     scores = compute_metric_at_times(roc_auc_score, 
                                      time_true,
                                      prob_pred, 
@@ -638,7 +639,7 @@ def roc_auc_at_times(time_true, prob_pred, event_observed, score_times):
                                      score_times)
     return scores
 
-def get_surv_curve(surv):
+def get_surv_curve(surv: pd.DataFrame) -> plt.Axes:
     plot = surv.plot(drawstyle='steps-post')
     plot.set_ylabel('S(t | x)')
     plot.set_xlabel('Time')
@@ -708,7 +709,7 @@ def mtlr_risk(logits: torch.Tensor) -> torch.Tensor:
     return torch.sum(hazard.cumsum(1), dim=1)
 
 
-def init_params(m: torch.nn.Module):
+def init_params(m: nn.Module) -> None:
         """Initialize the parameters of a module.
         Parameters
         ----------
