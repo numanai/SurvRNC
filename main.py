@@ -30,12 +30,12 @@ from hecktor_dataset import HecktorDataset2Images
 
 from torch.optim.lr_scheduler import StepLR, CosineAnnealingLR
 
-def load_config(config_path):
+def load_config(config_path: str) -> dict:
     with open(config_path, 'r') as file:
         config = yaml.safe_load(file)
     return config
 
-def set_seeds(seed):
+def set_seeds(seed: int) -> None:
     torch.manual_seed(seed)
     np.random.seed(seed)
     random.seed(seed)
@@ -44,12 +44,12 @@ def set_seeds(seed):
     set_determinism(seed)
     torch.cuda.manual_seed_all(seed)
 
-def init_wandb(config):
+def init_wandb(config: dict) -> None:
     os.environ["WANDB_API_KEY"] = config['wandb_api_key']
     wandb.login()
     wandb.init(project=config['wandb_project'], name=config['run_name'])
 
-def _pair_rank_mat(mat, idx_durations, events, dtype='float32'):
+def _pair_rank_mat(mat: np.ndarray, idx_durations: np.ndarray, events: np.ndarray, dtype: str = 'float32') -> np.ndarray:
     n = len(idx_durations)
     for i in range(n):
         dur_i = idx_durations[i]
@@ -63,7 +63,7 @@ def _pair_rank_mat(mat, idx_durations, events, dtype='float32'):
                 mat[i, j] = 1
     return mat
  
-def pair_rank_mat(idx_durations, events, dtype='float32'):
+def pair_rank_mat(idx_durations: np.ndarray, events: np.ndarray, dtype: str = 'float32') -> np.ndarray:
     """Indicator matrix R with R_ij = 1{T_i < T_j and D_i = 1}.
     So it takes value 1 if we observe that i has an event before j and zero otherwise.
     Arguments:
@@ -81,7 +81,7 @@ def pair_rank_mat(idx_durations, events, dtype='float32'):
     mat = _pair_rank_mat(mat, idx_durations, events, dtype)
     return mat
 
-def validate(model, loader, device, loss_fn, umap=False, surv_curve_samples=None, return_bs_auc=False, args=None):
+def validate(model: nn.Module, loader: DataLoader, device: torch.device, loss_fn: nn.Module, umap: bool = False, surv_curve_samples: int = None, return_bs_auc: bool = False, args: dict = None) -> dict:
     model.eval()
     
     meter_loss = AverageMeter()
@@ -165,7 +165,7 @@ def validate(model, loader, device, loss_fn, umap=False, surv_curve_samples=None
     return out
 
 
-def train(train_loader, val_loader, model, loss_fn, optimizer, device, args):
+def train(train_loader: DataLoader, val_loader: DataLoader, model: nn.Module, loss_fn: nn.Module, optimizer: torch.optim.Optimizer, device: torch.device, args: dict) -> tuple:
     reset_parameters(model)
     
     model.to(device)
@@ -261,7 +261,7 @@ def train(train_loader, val_loader, model, loss_fn, optimizer, device, args):
     model.eval()
     return model, best_weights
 
-def process(config):
+def process(config: dict) -> None:
     # Prepare data
     data = preprocess_data(config)
     
@@ -338,7 +338,7 @@ def process(config):
         
         wandb.log(log_dict)
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description='SurvRNC Training Script')
     parser.add_argument('--config', type=str, default='configs/train.yaml', help='Path to the config file')
     parser.add_argument('--override', nargs=argparse.REMAINDER, help='Override config parameters. Example: --optimizer SGD')
@@ -379,5 +379,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
