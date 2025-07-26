@@ -36,7 +36,9 @@ class Deep_CNN(nn.Module):
         self.args = args
         
         self.duration_index = args['lbl_cuts']
-        # self.max_duration = args.max_duration
+        self.max_duration = args.get('max_duration', None)
+        self.duration_col = 'duration'
+        self.event_col = 'event'
 
         self.ehr = nn.Linear(args['in_features'], 32)
 
@@ -120,7 +122,8 @@ class Deep_CNN(nn.Module):
             surv = self.predict_surv(input, True)
             return pd.DataFrame(surv.transpose(), self.duration_index)
         elif self.args['model_name'] in ['deepsurv']:
-            return np.exp(-self.predict_cumulative_hazards(input, max_duration, baseline_hazards_))
+            # Use default values for max_duration and baseline_hazards_
+            return np.exp(-self.predict_cumulative_hazards(input))
 
     
     def interpolate(self, sub=10, scheme='const_pdf', duration_index=None):
