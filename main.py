@@ -360,7 +360,12 @@ def main() -> None:
                 try:
                     value = float(value)
                 except ValueError:
-                    value = value.lower() if value.lower() in ['true', 'false'] else value
+                    # Handle boolean values
+                    if str(value).lower() == 'true':
+                        value = True
+                    elif str(value).lower() == 'false':
+                        value = False
+                    # Keep as string if not a boolean
             keys = key.split('.')
             cfg = config
             for k in keys[:-1]:

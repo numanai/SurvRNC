@@ -45,7 +45,10 @@ class HecktorDataset(Dataset):
         patient_id = row_data['PatientID']
         
         # Load preprocessed CT/PT image
-        ctpt = torch.load(os.path.join(self.data_path, 'processed', 'ctpt', f'{patient_id}_ctpt.pt'))
+        try:
+            ctpt = torch.load(os.path.join(self.data_path, 'processed', 'ctpt', f'{patient_id}_ctpt.pt'))
+        except FileNotFoundError:
+            raise FileNotFoundError(f"Could not find preprocessed image file for patient {patient_id} at {os.path.join(self.data_path, 'processed', 'ctpt', f'{patient_id}_ctpt.pt')}")
         
         if self.transform:
             # Apply transformation if specified
@@ -136,7 +139,10 @@ class HecktorTestDataset(HecktorDataset):
         row_data = self.clinical_data.iloc[idx]
         patient_id = row_data['PatientID']
         
-        ctpt = torch.load(os.path.join(self.data_path, 'ctpt', f'{patient_id}_ctpt.pt'))
+        try:
+            ctpt = torch.load(os.path.join(self.data_path, 'processed', 'ctpt', f'{patient_id}_ctpt.pt'))
+        except FileNotFoundError:
+            raise FileNotFoundError(f"Could not find preprocessed image file for patient {patient_id} at {os.path.join(self.data_path, 'processed', 'ctpt', f'{patient_id}_ctpt.pt')}")
         if self.transform:
             ctpt = self.transform(ctpt)
         
@@ -147,7 +153,7 @@ class HecktorTestDataset(HecktorDataset):
             row_data['Performance_0.0'], row_data['Performance_1.0'], row_data['Performance_2.0'], 
             row_data['Performance_3.0'], row_data['Performance_4.0'],
             row_data['HPV_0.0'], row_data['HPV_1.0'],
-            row_data['Surgery_0'], row_data['Surgery_1'],
+            row_data['Surgery_0.0'], row_data['Surgery_1.0'],
             row_data['Tobacco_0.0'], row_data['Tobacco_1.0'], 
             row_data['Alcohol_0.0'], row_data['Alcohol_1.0'],
         ]).astype(np.float32)
