@@ -227,5 +227,6 @@ class ProgRnCLoss(nn.Module):
             pos_log_probs = pos_logits[valid_rows] - torch.log((neg_mask_final[valid_rows] * _exp_logits[valid_rows]).sum(dim=-1))
             loss += -(pos_log_probs / Np).sum()
 
-        loss /= Na
+        if Na > 0:
+            loss /= Na
         return loss

@@ -686,7 +686,8 @@ def mtlr_hazard(logits: torch.Tensor) -> torch.Tensor:
     torch.Tensor
         The hazard function at each time interval in `y_pred`.
     """
-    return torch.softmax(logits, dim=1)[:, :-1] / (mtlr_survival(logits) + 1e-15)[:, 1:]
+    survival = mtlr_survival(logits)[:, 1:]
+    return torch.softmax(logits, dim=1)[:, :-1] / (survival + 1e-8)
 
 
 def mtlr_risk(logits: torch.Tensor) -> torch.Tensor:
